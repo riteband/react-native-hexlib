@@ -1,11 +1,15 @@
 import Atom from "./atom";
 
+function noop() {
+}
+
 export default function AppEngine({
     stateAtom: _stateAtom,
     initialState,
     render,
-    performSideEffects,
-    onStateChange
+    performSideEffects: _performSideEffects,
+    onStateChange,
+    system: _system
 }) {
     if (!initialState && !_stateAtom) {
         throw new Error("initialState or stateAtom required");
@@ -19,8 +23,42 @@ export default function AppEngine({
         throw new Error("Can't have both initialState and stateAtom");
     }
 
+    function stop() {
+
+    }
+
+    var sideEffectFns = [];
+
+    function addSideEffectFn(fn) {
+        sideEffectFns.push(fn);
+    }
+
+    function removeSideEffectFn(fn) {
+        sideEffectFns = sideEffectFns.filter(item => item !== fn);
+    }
+
+    if (_performSideEffects) {
+        addSideEffectFn(_performSideEffects);
+    }
+
+    function performSideEffects () {
+        sideEffectFns.forEach(function (fn) {
+            fn(getFnParams());
+        });
+    }
+
     const atom = _stateAtom || Atom(initialState);
-    const system = {};
+    const system = _system;
+    const engine = {
+        render: render || noop,
+        onStateChange: onStateChange || noop,
+        stop: stop,
+        stateAtom: atom,
+        system: system,
+        swapState: atom.swap,
+        addSideEffectFn: addSideEffectFn,
+        removeSideEffectFn: removeSideEffectFn
+    };
 
     function getFnParams() {
         return {
@@ -38,7 +76,7 @@ export default function AppEngine({
 
     var updateCallsForCurrentFrame = 0; // 1
 
-    function updateApp (state) {
+    function updateApp(state) {
         // 1
         updateCallsForCurrentFrame++;
         const updateCallsBeforeSideEffects = updateCallsForCurrentFrame;
@@ -52,21 +90,13 @@ export default function AppEngine({
             return;
         }
 
-        render(getFnParams());
-        onStateChange(getFnParams());
+        engine.render(getFnParams());
+        engine.onStateChange(getFnParams());
     }
 
     atom.onChange(updateApp);
 
     updateApp(atom.deref());
 
-    function stop() {
-
-    }
-
-    return {
-        stop: stop,
-        stateAtom: atom,
-        system: system
-    };
+    return engine;
 }

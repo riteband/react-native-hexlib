@@ -1,16 +1,5 @@
 import _ from "understreck";
 
-// TODO: use understreck version.
-function _set(o, p, v) {
-    for (var i = 0; i < p.length - 1; i++) {
-        if (!o[p[i]]) {
-            o[p[i]] = {};
-        }
-        o = o[p[i]];
-    }
-    o[p[p.length - 1]] = v;
-}
-
 // WARNING: if you change the signature of this function, make sure you change the arguments slicing inside as well.
 export function changeSubState(stateId, state, f) {
     stateId = _.isArray(stateId) ? stateId : [stateId];
@@ -18,7 +7,7 @@ export function changeSubState(stateId, state, f) {
     if (!_.get(state, stateId)) {
         console.warn("Undefined substate!");
     }
-    _set(state, stateId, f.apply(null, [_.get(state, stateId)].concat(args)));
+    _.set(state, stateId, f.apply(null, [_.get(state, stateId)].concat(args)));
     return state;
 }
 
