@@ -1,17 +1,26 @@
 {
-  "name": "@teamhex/hexlib",
-  "version": "1.1.0",
+  "name": "@teamhex/react-native-hexlib",
+  "version": "1.0.0",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/team-hex/hexlib.git"
+    "url": "git+https://github.com/team-hex/react-native-hexlib.git"
   },
   "author": "Hex Development AB",
   "bugs": {
-    "url": "https://github.com/team-hex/hexlib/issues"
+    "url": "https://github.com/team-hex/react-native-hexlib/issues"
   },
-  "homepage": "https://github.com/team-hex/hexlib#readme",
+  "homepage": "https://github.com/team-hex/react-native-hexlib#readme",
+  "peerDependencies": {
+    "react": "^16.13.1",
+    "react-native": "^0.63.2",
+    "react-native-reanimated": "^1.13.0",
+    "@react-native-community/async-storage": "^1.11.0",
+    "react-native-svg": "^12.1.0",
+    "react-native-track-player": "git@github.com:react-native-kit/react-native-track-player.git#8ae5808340c435b450c71dbe4da5e75101c7b720"
+  },
   "dependencies": {
-    "understreck": "^0.14.0"
+    "understreck": "^0.14.0",
+    "@teamhex/hexlib": "^1.1.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.10.5",
@@ -21,7 +30,7 @@
     "jest": "^26.4.2"
   },
   "scripts": {
-    "dist": "npx babel src -d dist && cp package.json dist/package.json"
+    "dist": "cp -r src/ dist && cp package.json dist/package.json"
   },
   "license": "MIT"
 }
