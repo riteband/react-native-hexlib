@@ -101,11 +101,23 @@ export function didSeekSound(state) {
     return state;
 }
 
-export function toggleSound(state) {
-    if (isPlayingSound(state)) {
-        state = pauseSound(state);
+export function toggleSound(state, sound) {
+    if (sound) {
+        let currentSound = getCurrentSound(state);
+        if (currentSound && currentSound.id === sound.id)  {
+            state = toggleSound(state);
+            return state;
+        } else {
+            state = playSound(state, sound);
+            return state;
+        }
     } else {
-        state = resumeSound(state);
+        if (isPlayingSound(state)) {
+            state = pauseSound(state);
+        } else {
+            state = resumeSound(state);
+        }
     }
+
     return state;
 }
