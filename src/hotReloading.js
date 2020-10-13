@@ -23,7 +23,7 @@ async function loadState({appEngine, performSideEffectsFns, createState, onState
         if (storedState !== null) {
             console.log("Found storage value");
             appEngine.changeState(function (_state) {
-                let state = {..._state, ...JSON.parse(onStateLoadModifier(storedState))};
+                let state = {..._state, ...onStateLoadModifier(JSON.parse(storedState))};
                 state[stateId].fetching = false;
                 state[stateId].success = true;
                 return state;
