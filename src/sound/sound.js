@@ -1,5 +1,5 @@
 import TrackPlayer, {TrackPlayerEvents, Capability} from 'react-native-track-player';
-import {wrapSubStatePerformSideEffects} from "@teamhex/hexlib/sideEffects";
+import {wrapSubStatePerformSideEffects} from "@teamhex/hexlib/sideEffectsUtils";
 import * as core from "./core"
 
 function noop() {
@@ -49,25 +49,25 @@ export default function createSoundPlayer() {
         resume: function () {
             TrackPlayer.play();
         },
-        initBackgroundActions: wrapSubStatePerformSideEffects(function ({system, swapState}) {
+        initBackgroundActions: wrapSubStatePerformSideEffects(function ({system, changeState}) {
             TrackPlayer.addEventListener('remote-play', function () {
-                swapState(core.resumeSound);
+                change(core.resumeSound);
             });
 
             TrackPlayer.addEventListener('remote-pause', function () {
-                swapState(core.pauseSound);
+                change(core.pauseSound);
             });
 
             TrackPlayer.addEventListener('remote-jump-backward', function (event) {
-                swapState(core.scrubSound, -event.interval);
+                change(core.scrubSound, -event.interval);
             });
 
             TrackPlayer.addEventListener('remote-jump-forward', async function (event) {
-                swapState(core.scrubSound, event.interval);
+                change(core.scrubSound, event.interval);
             });
 
             TrackPlayer.addEventListener('remote-seek', async function (event) {
-                swapState(core.seekSound, event.position);
+                change(core.seekSound, event.position);
             });
         }),
         scrub: async function (seconds) {

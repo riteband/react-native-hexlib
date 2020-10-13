@@ -12,25 +12,21 @@ export default function createAppEngineRenderRoot({appEngine, App}) {
         }
 
         render() {
-            var state = appEngine.stateAtom.deref();
+            var state = appEngine.stateStore.getState();
 
             return (
-                <App state={state} swapState={appEngine.stateAtom.swap} appEngine={appEngine} />
+                <App state={state} changeState={appEngine.stateStore.changeState} appEngine={appEngine} />
             );
         }
     }
 }
 
-export function withSideEffects({App, sideEffects}) {
+export function withSideEffects({App, performSideEffectsFns}) {
     return function (props) {
         useEffect(() => {
-            sideEffects.forEach(function (sideEffect) {
-                props.appEngine.addSideEffectFn(sideEffect);
-            });
+            props.appEngine.addPerformSideEffectsFns(performSideEffectsFns);
             return function cleanup() {
-                sideEffects.forEach(function (sideEffect) {
-                    props.appEngine.removeSideEffectFn(sideEffect);
-                });
+                props.appEngine.removePerformSideEffectsFns(performSideEffectsFns);
             }
         }, []);
 

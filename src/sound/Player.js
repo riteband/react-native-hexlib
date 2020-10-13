@@ -9,7 +9,7 @@ import {
 } from "react-native";
 // import AppScreenParameters from "../hexlib/AppScreenParameters";
 import * as core from "./core";
-import * as stateUtils from "@teamhex/hexlib/state";
+import * as stateUtils from "@teamhex/hexlib/stateUtils";
 import * as icons from "./icons";
 import {useTrackPlayerProgress} from 'react-native-track-player';
 
@@ -93,9 +93,9 @@ function ProgressBar() {
     );
 }
 
-function MiniPlayer({onPress, stateId, swapState: _swapState, state: _state}) {
+function MiniPlayer({onPress, stateId, changeState: _changeState, state: _state}) {
     const state = _state[stateId];
-    const swapState = stateUtils.createSwapSubState(_swapState, stateId);
+    const changeState = stateUtils.createChangeSubState(_changeState, stateId);
 
     var sound = core.getCurrentSound(state);
 
@@ -108,17 +108,17 @@ function MiniPlayer({onPress, stateId, swapState: _swapState, state: _state}) {
                         <Text numberOfLines={1} style={miniPlayerStyles.text}>{sound.title}</Text>
                         <View style={{flexDirection: "row"}}>
                             <TouchableOpacity style={{padding: 16, paddingRight: 8}} onPress={() => {
-                                swapState(core.scrubSound, -15);
+                                changeState(core.scrubSound, -15);
                             }}>
                                 <icons.ScrubBackwardShortIcon size="22"/>
                             </TouchableOpacity>
                             <TouchableOpacity style={{padding: 16}} onPress={() => {
-                                swapState(core.toggleSound);
+                                changeState(core.toggleSound);
                             }}>
                                 {core.isPlayingSound(state) ? <icons.PauseIcon size="22"/> : <icons.PlayIcon size="22"/>}
                             </TouchableOpacity>
                             <TouchableOpacity style={{padding: 16, paddingLeft: 8, paddingRight: 20}} onPress={() => {
-                                swapState(core.scrubSound, 15);
+                                changeState(core.scrubSound, 15);
                             }}>
                                 <icons.ScrubForwardShortIcon size="22"/>
                             </TouchableOpacity>

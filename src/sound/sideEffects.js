@@ -1,9 +1,9 @@
 import * as core from "./core";
-import {wrapSubStatePerformSideEffects} from "@teamhex/hexlib/sideEffects";
+import {wrapSubStatePerformSideEffects} from "@teamhex/hexlib/sideEffectsUtils";
 
-export default wrapSubStatePerformSideEffects(function performSideEffectsSound({state, swapState, system}) {
+export default wrapSubStatePerformSideEffects(function performSideEffectsSound({state, changeState, system}) {
     if (core.shouldPlaySound(state)) {
-        swapState(core.didPlaySound);
+        changeState(core.didPlaySound);
         var sound = core.getCurrentSound(state);
         system.soundPlayer.play({
             id: sound.id,
@@ -12,18 +12,18 @@ export default wrapSubStatePerformSideEffects(function performSideEffectsSound({
             artist: sound.artist
         });
     } else if (core.shouldPauseSound(state)) {
-        swapState(core.didPauseSound);
+        changeState(core.didPauseSound);
         system.soundPlayer.pause();
     } else if (core.shouldResumeSound(state)) {
-        swapState(core.didResumeSound);
+        changeState(core.didResumeSound);
         system.soundPlayer.resume();
     } else if (core.shouldScrubSound(state)) {
         var s = core.getScrub(state);
-        swapState(core.didScrubSound);
+        changeState(core.didScrubSound);
         system.soundPlayer.scrub(s);
     } else if (core.shouldSeekSound(state)) {
         var s = core.getSeek(state);
-        swapState(core.didSeekSound);
+        changeState(core.didSeekSound);
         system.soundPlayer.seekTo(s);
     }
 });
