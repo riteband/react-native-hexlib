@@ -20,7 +20,6 @@
   },
   "dependencies": {
     "@teamhex/hexlib": "^1.1.0",
-    "react-native-dev-menu": "^4.0.2",
     "understreck": "^0.14.0"
   },
   "devDependencies": {
@@ -28,7 +27,8 @@
     "@babel/core": "^7.11.4",
     "@babel/preset-env": "^7.11.0",
     "babel-jest": "^26.3.0",
-    "jest": "^26.4.2"
+    "jest": "^26.4.2",
+    "react-native-dev-menu": "^4.0.2"
   },
   "scripts": {
     "dist": "cp -r src/ dist && cp package.json dist/package.json"
