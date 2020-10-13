@@ -26,7 +26,7 @@ async function loadState({appEngine, sideEffectFns, createState}) {
         if (storedState !== null) {
             console.log("Found storage value");
             appEngine.swapState(function (_state) {
-                state = {..._state, ...JSON.parse(storedState)};
+                let state = {..._state, ...JSON.parse(storedState)};
                 state[stateId].fetching = false;
                 state[stateId].success = true;
                 return state;
@@ -34,7 +34,7 @@ async function loadState({appEngine, sideEffectFns, createState}) {
         } else {
             console.log("Found no storage value");
             appEngine.swapState(function (_state) {
-                state = {..._state, ...createState()};
+                let state = {..._state, ...createState()};
                 state[stateId].fetching = false;
                 state[stateId].success = true;
                 return state;
@@ -46,7 +46,7 @@ async function loadState({appEngine, sideEffectFns, createState}) {
             appEngine.addSideEffectFn(fn);
         });
         appEngine.swapState(function (_state) {
-            state = {..._state, ...createState()};
+            let state = {..._state, ...createState()};
             state[stateId].fetching = false;
             state[stateId].success = false;
             return state;
@@ -69,12 +69,14 @@ export function HotReloading({enabled, createState, appEngine, sideEffectFns}) {
         sideEffectFns.forEach(function (fn) {
             appEngine.addSideEffectFn(fn);
         });
-        appEngine.swapState(function (_state) {
-            state = {..._state, ...createState()};
+        let newState = appEngine.swapState(function (_state) {
+            let state = {..._state, ...createState()};
             state[stateId].fetching = false;
             state[stateId].success = true;
+            state[stateId].navigationState = null;
             return state;
         });
+        persistState('@app_state', newState);
     }
 
     return {
@@ -86,7 +88,7 @@ export function HotReloading({enabled, createState, appEngine, sideEffectFns}) {
             return function HotReloadingApp(props) {
                 if (!props.state[stateId].fetching && props.state[stateId].success) {
                     return <App {...props}
-                                initialNavigationState={state[stateId].navigationState}
+                                initialNavigationState={props.state[stateId].navigationState}
                                 onNavigationStateChange={function (navigationState) {
                                     appEngine.swapState(function (state) {
                                         state[stateId].navigationState = navigationState;
