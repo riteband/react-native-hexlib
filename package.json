@@ -19,8 +19,9 @@
     "react-native-track-player": "git@github.com:react-native-kit/react-native-track-player.git#8ae5808340c435b450c71dbe4da5e75101c7b720"
   },
   "dependencies": {
-    "understreck": "^0.14.0",
-    "@teamhex/hexlib": "^1.1.0"
+    "@teamhex/hexlib": "^1.1.0",
+    "react-native-dev-menu": "^4.0.2",
+    "understreck": "^0.14.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.10.5",
