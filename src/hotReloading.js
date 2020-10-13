@@ -16,17 +16,14 @@ function persistState(key, state) {
     storeData();
 }
 
-async function loadState({appEngine, sideEffectFns, createState}) {
+async function loadState({appEngine, sideEffectFns, createState, onStateLoadModifier = (s) => s}) {
     try {
         const storedState = await AsyncStorage.getItem('@app_state');
 
-        sideEffectFns.forEach(function (fn) {
-            appEngine.addSideEffectFn(fn);
-        });
         if (storedState !== null) {
             console.log("Found storage value");
             appEngine.swapState(function (_state) {
-                let state = {..._state, ...JSON.parse(storedState)};
+                let state = {..._state, ...JSON.parse(onStateLoadModifier(storedState))};
                 state[stateId].fetching = false;
                 state[stateId].success = true;
                 return state;
@@ -43,9 +40,7 @@ async function loadState({appEngine, sideEffectFns, createState}) {
         }
     } catch (e) {
         console.log("Async Storage failed: ", e);
-        sideEffectFns.forEach(function (fn) {
-            appEngine.addSideEffectFn(fn);
-        });
+
         appEngine.swapState(function (_state) {
             let state = {..._state, ...createState()};
             state[stateId].renderKey = 0;
@@ -53,10 +48,14 @@ async function loadState({appEngine, sideEffectFns, createState}) {
             state[stateId].success = false;
             return state;
         });
+    } finally {
+        sideEffectFns.forEach(function (fn) {
+            appEngine.addSideEffectFn(fn);
+        });
     }
 }
 
-export function HotReloading({enabled, createState, appEngine, sideEffectFns}) {
+export function HotReloading({enabled, createState, appEngine, sideEffectFns, onStateLoadModifier}) {
     if (enabled) {
         if (__DEV__) {
             const DevMenu = require('react-native-dev-menu');
@@ -78,12 +77,9 @@ export function HotReloading({enabled, createState, appEngine, sideEffectFns}) {
         appEngine.onStateChange = function ({state}) {
             persistState('@app_state', state);
         };
-        loadState({appEngine, sideEffectFns, createState});
+        loadState({appEngine, sideEffectFns, createState, onStateLoadModifier});
     } else {
         console.log("HOT RELOADING DISABLED - RESETTING APP STATE");
-        sideEffectFns.forEach(function (fn) {
-            appEngine.addSideEffectFn(fn);
-        });
         let newState = appEngine.swapState(function (_state) {
             let state = {..._state, ...createState()};
             state[stateId].renderKey = 0;
@@ -93,6 +89,9 @@ export function HotReloading({enabled, createState, appEngine, sideEffectFns}) {
             return state;
         });
         persistState('@app_state', newState);
+        sideEffectFns.forEach(function (fn) {
+            appEngine.addSideEffectFn(fn);
+        });
     }
 
     return {

@@ -1,4 +1,4 @@
-import React, {Component} from "react";
+import React, {Component, useEffect} from "react";
 
 export default function createAppEngineRenderRoot({appEngine, App}) {
     return class AppEngineRenderRoot extends Component {
@@ -7,26 +7,33 @@ export default function createAppEngineRenderRoot({appEngine, App}) {
             var thisComponent = this;
             this.state = {counter: 0};
             appEngine.render = function () {
-                // if (isMountedRef.current) {
                 thisComponent.setState({counter: thisComponent.state.counter++});
-                // }
             };
         }
 
-        // componentDidMount() {
-        //     setTimeout(function () {
-        //         isMountedRef.current = true;
-        //     }, 0);
-        // }
-
         render() {
-            var thisComponent = this;
-
             var state = appEngine.stateAtom.deref();
 
             return (
-                <App state={state} swapState={appEngine.stateAtom.swap} appEngine={appEngine}></App>
+                <App state={state} swapState={appEngine.stateAtom.swap} appEngine={appEngine} />
             );
         }
+    }
+}
+
+export function withSideEffects({App, sideEffects}) {
+    return function (props) {
+        useEffect(() => {
+            sideEffects.forEach(function (sideEffect) {
+                props.appEngine.addSideEffectFn(sideEffect);
+            });
+            return function cleanup() {
+                sideEffects.forEach(function (sideEffect) {
+                    props.appEngine.removeSideEffectFn(sideEffect);
+                });
+            }
+        }, []);
+
+        return <App {...props} />;
     }
 }
