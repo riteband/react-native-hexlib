@@ -51,23 +51,23 @@ export default function createSoundPlayer() {
         },
         initBackgroundActions: wrapSubStatePerformSideEffects(function ({system, changeState}) {
             TrackPlayer.addEventListener('remote-play', function () {
-                change(core.resumeSound);
+                changeState(core.resumeSound);
             });
 
             TrackPlayer.addEventListener('remote-pause', function () {
-                change(core.pauseSound);
+                changeState(core.pauseSound);
             });
 
             TrackPlayer.addEventListener('remote-jump-backward', function (event) {
-                change(core.scrubSound, -event.interval);
+                changeState(core.scrubSound, -event.interval);
             });
 
             TrackPlayer.addEventListener('remote-jump-forward', async function (event) {
-                change(core.scrubSound, event.interval);
+                changeState(core.scrubSound, event.interval);
             });
 
             TrackPlayer.addEventListener('remote-seek', async function (event) {
-                change(core.seekSound, event.position);
+                changeState(core.seekSound, event.position);
             });
         }),
         scrub: async function (seconds) {
